@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: semantic-cache-gateway
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: EMBED_MODEL
+        value: nvidia/nemotron-3-embed-1b:free
+      - key: LLM_MODEL
+        value: openrouter/free
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: semantic-cache-redis
+          property: connectionString
+
+  - type: redis
+    name: semantic-cache-redis
+    plan: free
+    ipAllowList: []
